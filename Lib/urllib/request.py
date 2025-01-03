@@ -878,9 +878,9 @@ class HTTPPasswordMgrWithDefaultRealm(HTTPPasswordMgr):
 
 class HTTPPasswordMgrWithPriorAuth(HTTPPasswordMgrWithDefaultRealm):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.authenticated = {}
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
     def add_password(self, realm, uri, user, passwd, is_authenticated=False):
         self.update_authenticated(uri, is_authenticated)
@@ -1670,6 +1670,10 @@ else:
     def pathname2url(pathname):
         """OS-specific conversion from a file system path to a relative URL
         of the 'file' scheme; not recommended for general use."""
+        if pathname[:2] == '//':
+            # Add explicitly empty authority to avoid interpreting the path
+            # as authority.
+            pathname = '//' + pathname
         encoding = sys.getfilesystemencoding()
         errors = sys.getfilesystemencodeerrors()
         return quote(pathname, encoding=encoding, errors=errors)
